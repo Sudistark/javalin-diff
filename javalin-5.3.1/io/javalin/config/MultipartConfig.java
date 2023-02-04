@@ -16,15 +16,15 @@ public final class MultipartConfig {
   
   private long maxFileSize;
   
-  private int maxInMemoryFileSize;
-  
   private long maxTotalRequestSize;
+  
+  private int maxInMemoryFileSize;
   
   public MultipartConfig() {
     this.cacheDirectory = System.getProperty("java.io.tmpdir");
     this.maxFileSize = -1L;
-    this.maxInMemoryFileSize = -1;
     this.maxTotalRequestSize = -1L;
+    this.maxInMemoryFileSize = 1;
     MultipartUtil.INSTANCE.setPreUploadFunction(new Function1<HttpServletRequest, Unit>() {
           public final void invoke(@NotNull HttpServletRequest req) {
             Intrinsics.checkNotNullParameter(req, "req");

@@ -22,13 +22,16 @@ import kotlin.jvm.internal.Lambda;
 import kotlin.ranges.RangesKt;
 import org.jetbrains.annotations.NotNull;
 
-@Metadata(mv = {1, 7, 1}, k = 1, xi = 48, d1 = {"\000D\n\002\030\002\n\002\020\000\n\002\b\002\n\002\020\016\n\000\n\002\030\002\n\002\030\002\n\002\020\002\n\002\b\005\n\002\020$\n\002\020 \n\002\b\004\n\002\030\002\n\002\b\002\n\002\020\013\n\000\n\002\030\002\n\002\b\002\bÆ\002\030\0002\0020\001B\007\b\002¢\006\002\020\002J \020\r\032\024\022\004\022\0020\004\022\n\022\b\022\004\022\0020\0040\0170\0162\006\020\020\032\0020\007J\036\020\021\032\b\022\004\022\0020\0040\0172\006\020\020\032\0020\0072\006\020\022\032\0020\004H\002J \020\023\032\024\022\004\022\0020\004\022\n\022\b\022\004\022\0020\0240\0170\0162\006\020\020\032\0020\007J\024\020\025\032\b\022\004\022\0020\0240\0172\006\020\020\032\0020\007J\034\020\025\032\b\022\004\022\0020\0240\0172\006\020\020\032\0020\0072\006\020\022\032\0020\004J\020\020\026\032\0020\0272\006\020\030\032\0020\031H\002J\020\020\032\032\0020\0272\006\020\030\032\0020\031H\002R\016\020\003\032\0020\004XT¢\006\002\n\000R&\020\005\032\016\022\004\022\0020\007\022\004\022\0020\b0\006X\016¢\006\016\n\000\032\004\b\t\020\n\"\004\b\013\020\f¨\006\033"}, d2 = {"Lio/javalin/http/util/MultipartUtil;", "", "()V", "MULTIPART_CONFIG_ATTRIBUTE", "", "preUploadFunction", "Lkotlin/Function1;", "Ljakarta/servlet/http/HttpServletRequest;", "", "getPreUploadFunction", "()Lkotlin/jvm/functions/Function1;", "setPreUploadFunction", "(Lkotlin/jvm/functions/Function1;)V", "getFieldMap", "", "", "req", "getPartValue", "partName", "getUploadedFileMap", "Lio/javalin/http/UploadedFile;", "getUploadedFiles", "isField", "", "filePart", "Ljakarta/servlet/http/Part;", "isFile", "javalin"})
+@Metadata(mv = {1, 7, 1}, k = 1, xi = 48, d1 = {"\000J\n\002\030\002\n\002\020\000\n\002\b\002\n\002\020\016\n\000\n\002\030\002\n\000\n\002\030\002\n\002\030\002\n\002\020\002\n\002\b\005\n\002\020$\n\002\020 \n\002\b\004\n\002\030\002\n\002\b\002\n\002\020\013\n\000\n\002\030\002\n\002\b\002\bÆ\002\030\0002\0020\001B\007\b\002¢\006\002\020\002J \020\017\032\024\022\004\022\0020\004\022\n\022\b\022\004\022\0020\0040\0210\0202\006\020\022\032\0020\tJ\036\020\023\032\b\022\004\022\0020\0040\0212\006\020\022\032\0020\t2\006\020\024\032\0020\004H\002J \020\025\032\024\022\004\022\0020\004\022\n\022\b\022\004\022\0020\0260\0210\0202\006\020\022\032\0020\tJ\024\020\027\032\b\022\004\022\0020\0260\0212\006\020\022\032\0020\tJ\034\020\027\032\b\022\004\022\0020\0260\0212\006\020\022\032\0020\t2\006\020\024\032\0020\004J\020\020\030\032\0020\0312\006\020\032\032\0020\033H\002J\020\020\034\032\0020\0312\006\020\032\032\0020\033H\002R\016\020\003\032\0020\004XT¢\006\002\n\000R\016\020\005\032\0020\006X\004¢\006\002\n\000R&\020\007\032\016\022\004\022\0020\t\022\004\022\0020\n0\bX\016¢\006\016\n\000\032\004\b\013\020\f\"\004\b\r\020\016¨\006\035"}, d2 = {"Lio/javalin/http/util/MultipartUtil;", "", "()V", "MULTIPART_CONFIG_ATTRIBUTE", "", "defaultConfig", "Ljakarta/servlet/MultipartConfigElement;", "preUploadFunction", "Lkotlin/Function1;", "Ljakarta/servlet/http/HttpServletRequest;", "", "getPreUploadFunction", "()Lkotlin/jvm/functions/Function1;", "setPreUploadFunction", "(Lkotlin/jvm/functions/Function1;)V", "getFieldMap", "", "", "req", "getPartValue", "partName", "getUploadedFileMap", "Lio/javalin/http/UploadedFile;", "getUploadedFiles", "isField", "", "filePart", "Ljakarta/servlet/http/Part;", "isFile", "javalin"})
 public final class MultipartUtil {
   @NotNull
   public static final MultipartUtil INSTANCE = new MultipartUtil();
   
   @NotNull
   public static final String MULTIPART_CONFIG_ATTRIBUTE = "org.eclipse.jetty.multipartConfig";
+  
+  @NotNull
+  private static final MultipartConfigElement defaultConfig = new MultipartConfigElement(System.getProperty("java.io.tmpdir"), -1L, -1L, 1);
   
   @NotNull
   private static Function1<? super HttpServletRequest, Unit> preUploadFunction = MultipartUtil$preUploadFunction$1.INSTANCE;
@@ -49,11 +52,8 @@ public final class MultipartUtil {
     
     public final void invoke(@NotNull HttpServletRequest req) {
       Intrinsics.checkNotNullParameter(req, "req");
-      Object existingConfig = req.getAttribute("org.eclipse.jetty.multipartConfig");
-      if (existingConfig == null)
-        req.setAttribute(
-            "org.eclipse.jetty.multipartConfig", 
-            new MultipartConfigElement(System.getProperty("java.io.tmpdir"), -1L, -1L, 1)); 
+      if (req.getAttribute("org.eclipse.jetty.multipartConfig") == null)
+        req.setAttribute("org.eclipse.jetty.multipartConfig", MultipartUtil.defaultConfig); 
     }
     
     MultipartUtil$preUploadFunction$1() {
